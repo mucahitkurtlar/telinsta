@@ -20,7 +20,7 @@ PASSWORD = "XXXXXXXXXXXXXXXXXXXXXXXX" # Instagram password
 <b>Please don't use your main Instagram account.</b> It can be blocked. Create another one for automation.
 
 ### Docker
-You can run this roject as container.
+You can run this project as container.
 <br>
 Build the image
 ```sh
@@ -52,7 +52,7 @@ options:
 -t --thumbnail - download with thumbnail
 ```
 ### Examples
-`/d https://www.instagram.com/p/Cd1HoW4LJMg/ 2 -t` download 2'nd media with thumbnail
+`/d https://www.instagram.com/p/Cd1HoW4LJMg/ 2 -t` download 2nd media with thumbnail
 <br>
 
 `/c https://www.instagram.com/p/CeD6P3aDIi6/` download post's caption
