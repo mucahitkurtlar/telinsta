@@ -56,3 +56,9 @@ options:
 <br>
 
 `/c https://www.instagram.com/p/CeD6P3aDIi6/` download post's caption
+
+## TODO
+- Handle `igshid` payload on URL
+- Reels support
+- Profile picture support
+- Story support
