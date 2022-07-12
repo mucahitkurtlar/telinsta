@@ -1,3 +1,4 @@
+from cmath import log
 import shutil
 import logging
 import telebot
@@ -18,6 +19,8 @@ class LocalPost:
 		self.caption = caption
 		self.pcaption = pcaption
 
+
+
 class Option:
 	def __init__(self, is_caption, is_pcaption, is_thumbnail, index):
 		self.is_caption = is_caption
@@ -26,7 +29,7 @@ class Option:
 		self.index = index
 
 def download_post(link: str, thumbnail=False):
-	shortcode = link.split("/p/")[1].replace("/", "")
+	shortcode = re.split("https://www.instagram.com/[a-z]+/", link)[1].split("/")[0]
 	logging.debug(f"Shortcode: {shortcode}")
 
 	L.download_video_thumbnails = thumbnail
@@ -87,10 +90,13 @@ def send_downloaded(chat_id: int | str, local_post: LocalPost, option: Option):
 	shutil.rmtree(local_post.shortcode)
 	logging.debug(f"Folder deleted: {local_post.shortcode}")
 
+
 def check_params(message: str):
 	params = message.split(" ")
 	index = "*"
-	if len(params) <= 1 or not params[1].startswith("https://www.instagram.com/p/"):
+	if len(params) <= 1 or not (params[1].startswith("https://www.instagram.com/") or params[1].startswith("https://instagram.com/")):
+		logging.debug(f"Invalid link: {params[1]}")
+		logging.debug(f"Params length: {len(params)}")
 		return None, None
 	link = params[1]
 	for param in params:
@@ -101,6 +107,7 @@ def check_params(message: str):
 	option = Option("-c" in params or "--caption" in params, "-p" in params or "--pcaption" in params, "-t" in params or "--thumbnail" in params, index)
 	return option, link
 
+
 def send_help_message(chat_id: int | str):
 	bot.send_message(chat_id, help_message)
 
@@ -109,6 +116,21 @@ def help(message):
 	logging.debug(f"help command triggered from {message.chat.id}")
 	bot.reply_to(message, help_message)
 
+def handle_story(chat_id: int | str, link: str):
+	username = re.split("https://instagram.com/[a-z]+/", link)[1].split("/")[0]
+	logging.debug(f"Username: {username}")
+	mediaid = re.split("https://instagram.com/[a-z]+/", link)[1].split("/")[1].split("?")[0]
+	logging.debug(f"Mediaid: {mediaid}")
+	profile = instaloader.Profile.from_username(context=L.context, username=username)
+	for stroy in L.get_stories([profile.userid]):
+		for item in stroy.get_items():
+			if mediaid == str(item.mediaid):
+				L.download_storyitem(item, str(mediaid))
+
+	files = glob.glob(str(mediaid) + "/*")
+	send_medias(chat_id, files)
+	shutil.rmtree(str(mediaid))
+	logging.debug(f"Folder deleted: {str(mediaid)}")
 
 @bot.message_handler(commands=['download', 'd'])
 def download(message):
@@ -117,6 +139,11 @@ def download(message):
 	if link is None:
 		send_help_message(message.chat.id)
 		return
+	elif link.startswith("https://www.instagram.com/stories") or link.startswith("https://instagram.com/stories"):
+		link = link.replace("www.", "")
+		handle_story(message.chat.id, link)
+		return
+
 	local_post = download_post(link, option.is_thumbnail)
 	send_downloaded(message.chat.id, local_post, option)
 
