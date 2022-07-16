@@ -62,3 +62,4 @@ options:
 - ☑ Reels support
 - ☐ Profile picture support
 - ☑ Story support
+- ☐ Add chat ID whitelist for authorization
