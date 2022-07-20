@@ -30,6 +30,32 @@ Run the container
 ```sh
 docker run --name telinsta -v $(pwd)/credentials.py:/opt/telinsta/credentials.py mucahitkurtlar/telinsta
 ```
+### Creating systemd service with container (Optional)
+Copy `service/telinsta.service` to `/etc/systemd/system` then reload daemon
+```sh
+systemctl daemon-reload
+```
+Edit service to add path variables
+```sh
+systemctl edit telinsta.service
+```
+Add path variables to the reserved area
+```ini
+### Anything between here and the comment below will become the new contents of the file
+
+[Service]
+Environment="TELINSTA_PATH=path/to/telinsta"
+
+### Lines below this comment will be discarded
+```
+Save and exit then start/enable service.
+```sh
+systemctl start telinsta.service
+```
+```sh
+systemctl enable telinsta.service
+```
+
 ### Native
 Firstly, install requirements
 ```sh

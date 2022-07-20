@@ -1,0 +1,19 @@
+#!/bin/bash
+
+name=telinsta-log
+logdir=$TELINSTA_PATH/log
+if [[ -e $logdir/$name.log || -L $logdir/$name.log ]] ; then
+    i=0
+    while [[ -e $logdir/$name-$i.log || -L $logdir/$name-$i.log ]] ; do
+        let i++
+    done
+    name=$name-$i
+fi
+touch -- $logdir/"$name".log
+logfile=$logdir/"$name".log
+
+docker logs telinsta >& $logfile
+docker stop telinsta
+docker container rm telinsta
+docker run --name telinsta -d -v $TELINSTA_PATH/credentials.py:/opt/telinsta/credentials.py mucahitkurtlar/telinsta
+

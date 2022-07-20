@@ -1,0 +1,12 @@
+[Unit]
+Description=telinsta service
+After=docker.service
+Wants=network-online.target docker.socket
+Requires=docker.socket
+
+[Service]
+WorkingDirectory=/opt/telinsta/service
+ExecStart=/opt/telinsta/service/telinsta-init
+
+[Install]
+WantedBy=multi-user.target
