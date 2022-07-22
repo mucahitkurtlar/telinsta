@@ -7,7 +7,6 @@ Requires=docker.socket
 [Service]
 WorkingDirectory=/opt/telinsta/service
 ExecStart=/opt/telinsta/service/telinsta-init
-ExecStop=/opt/telinsta/service/telinsta-stop
 
 [Install]
 WantedBy=multi-user.target
